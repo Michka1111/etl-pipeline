@@ -87,8 +87,9 @@ La prochaine saison débute bientôt — le pipeline sera utilisé pour suivre l
 ```
 
 ## 🤝 Contributions
-Le projet est personnel à ce stade, mais toute réflexion autour des pipelines ETL + IA est la bienvenue !
+Le projet est personnel à ce stade ; toute réflexion autour du paradigme ECS appliqué au domaine "pipelines ETL + IA" est la bienvenue !
 
 ## 📜 Licence
+
 Usage privé et non commercial. À compléter avec une licence type MIT lorsque tu ouvres le projet.
 ---
