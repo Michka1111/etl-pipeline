@@ -4,5 +4,8 @@
     "python.testing.cwd": "c:\\Users\\Michel\\ZDEV\\WORKSPACES\\ECS\\dev-poc\\src",
     "editor.scrollbar.scrollByPage": true,
     "editor.scrollbar.verticalScrollbarSize": 17,
-    "editor.scrollbar.horizontalScrollbarSize": 17
+    "editor.scrollbar.horizontalScrollbarSize": 17,
+    "python.globalModuleInstallation": true,
+    "python.terminal.activateEnvironment": false,
+    "files.eol": "\n"
 }
