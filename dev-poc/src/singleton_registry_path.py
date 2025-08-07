@@ -34,9 +34,10 @@ class _PathRegistry:
         self._paths = SimpleNamespace()
         self._initialized = False
         self._default_paths = {
-            "flecs_dll_path": Path("dev-poc/lib/flecs.dll"),
-            "world_data_in_path": Path("dev-poc/src/data_in"),
-            "world_data_out_path": Path("dev-poc/src/data_out")
+            "flecs_dll_path": Path("dev-poc/lib")
+            , "flecs_dll_name": "flecs410.dll"
+            , "world_data_in_path": Path("dev-poc/src/data_in")
+            , "world_data_out_path": Path("dev-poc/src/data_out")
         }
         self.init(self._default_paths.items())
 
