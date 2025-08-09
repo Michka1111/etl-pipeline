@@ -19,9 +19,12 @@ def test_default_paths_exist():
     """
     Vérifie que les chemins par défaut sont bien enregistrés et corrects.
     """
-    assert PathRegistry.get_path("flecs_dll_path").name == "flecs.dll"
-    assert PathRegistry.get_path("world_data_in_path").parts[-2:] == ("src", "data_in")
-    assert PathRegistry.get_path("world_data_out_path").parts[-2:] == ("src", "data_out")
+    _pth = PathRegistry.get_path("flecs_dll_path")
+    assert _pth.name == "flecs410.dll"
+    _pth = PathRegistry.get_path("world_data_in_path")
+    assert _pth.parts == ( "data_in", ) # parts[-2:]
+    _pth = PathRegistry.get_path("world_data_out_path")
+    assert _pth.parts == ("data_out", )
 
 def test_add_new_path():
     """

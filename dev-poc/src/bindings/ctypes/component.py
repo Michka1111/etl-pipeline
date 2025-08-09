@@ -3,6 +3,7 @@ from ctypes import (
     , c_int32, c_uint64, c_size_t, c_char_p, c_void_p, c_bool
     , POINTER, byref, sizeof, alignment
 )
+from bindings.ctypes.flecs import *
 
 '''
 Nan, erreur de manip, l'éditeur de prompt est vraiment basique, g pas fini de taper et je fais [ENTER] au lieu de [MAJ+ENTER] ! Voici le code.
@@ -102,15 +103,15 @@ class EcsComponentDesc(Structure):      # ECS_COMPONENT_DESC_T
         , ("type",      EcsTypeInfo)    # ecs_type_info_t)   # See Above
     ]
 
-def register_component_struct(
+def register_dataclass_component(
     p_world_ptr
-    , p_struct_cls
+    , p_data_cls
     , p_flecs_lib: CDLL
     ) -> c_uint64:
 
-    _name = p_struct_cls.__name__
-    _size = sizeof(p_struct_cls)
-    _align = alignment(p_struct_cls)
+    _name = p_data_cls.__name__
+    _size = sizeof(p_data_cls)
+    _align = alignment(p_data_cls)
 
     _edesc = EcsEntityDesc()
     _edesc._canary = 0
@@ -146,3 +147,31 @@ def register_component_struct(
     assert _component_id != 0, f"Failed to register component {_name}"
 
     return _component_id
+
+
+# Ajout d’un composant à une entité
+def ecs_add_component(world, entity, component_id):
+    lib = binded_load_flecs()
+    lib.ecs_add_id.argtypes = [ecs_world_t, ecs_entity_t, ecs_entity_t]
+    lib.ecs_add_id(world, entity, component_id)
+
+# Écriture des données d’un composant
+def ecs_set_component_data(world, entity, component_id, data: Structure):
+    lib = binded_load_flecs()
+    lib.ecs_get_mut_id.restype = c_void_p
+    lib.ecs_get_mut_id.argtypes = [ecs_world_t, ecs_entity_t, ecs_entity_t, POINTER(c_bool)]
+    is_added = c_bool()
+    ptr = lib.ecs_get_mut_id(world, entity, component_id, byref(is_added))
+    memmove(ptr, byref(data), sizeof(data))
+
+# Récupération du composant
+def get_component_data(world, entity: c_uint64, component_id: c_uint64, struct_cls: type):
+    lib = world.lib
+    lib.ecs_get_id.restype = c_void_p
+    lib.ecs_get_id.argtypes = [c_void_p, c_uint64, c_uint64]
+    ptr = lib.ecs_get_id(world.world, entity, component_id)
+    if not ptr:
+        return None
+    data = struct_cls()
+    memmove(byref(data), ptr, sizeof(data))
+    return data

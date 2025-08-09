@@ -1,27 +1,46 @@
 from ctypes import (
-    CDLL, Structure
+    Structure
     , c_double
-    , c_void_p
 )
 
-from component import register_component_struct
+from bindings.ctypes.component import register_dataclass_component
+from bindings.ctypes.flecs import *
 
 class Position(Structure):
     _fields_ = [
-        ("x", c_double)
+        (  "x", c_double)
         , ("y", c_double)
     ]
 
 def test_register_position_component():
-    _flecs_lib = CDLL("path/to/flecs.dll")  # adapte le chemin
-    _flecs_lib.ecs_init.restype = c_void_p
-    _world_ptr = _flecs_lib.ecs_init()
-
-    _component_id = register_component_struct(
-        p_world_ptr=_world_ptr
-        , p_struct_cls=Position
-        , p_flecs_lib=_flecs_lib
+    _world = binded_ecs_init()
+    _component_id = register_dataclass_component(
+        p_world_ptr =_world
+        , p_struct_cls = Position
+        , p_flecs_lib = binded_load_flecs()
     )
 
     assert isinstance(_component_id, int)
     assert _component_id != 0
+
+
+#
+# Application : Structure C pour un composant HTML
+#
+# Définition d'une classe C pour représenter un composant HTML
+class CHTMLComponent(Structure):
+    _fields_ = [("html", c_char * 256)]  # taille fixe pour l’exemple
+
+# Définition de l'enregistrement du composant HTML
+def register_html_component(world):
+    return ecs_register_component_struct(world, "HTMLComponent", CHTMLComponent)
+
+# Entitisation du composant HTML 
+# à une entité métier fournie, 
+# avec des données HTML fournies (non-contrôlées)
+def set_html_component(world, entity, component_id, html_str: str):
+    html = CHTMLComponent()
+    html.html = html_str.encode("utf-8")[:255]
+    ecs_add_component(world, entity, component_id)
+    ecs_set_component_data(world, entity, component_id, html)
+

@@ -2,9 +2,9 @@ from flecs import *
 
 if __name__ == "__main__":
     # Monde
-    world = ecs_init()
+    world = binded_ecs_init()
     # Entité
-    entity = ecs_new(world)
+    entity = binded_ecs_new(world)
 
     # Composant HTML
     # 1 REGISTER
@@ -24,4 +24,4 @@ if __name__ == "__main__":
         print("Contenu HTML extrait du composant de l'entité :", html_str)
 
     # Terminer le monde
-    ecs_fini(world)
+    binded_ecs_fini(world)
