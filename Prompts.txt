@@ -1,0 +1,58 @@
+Nan, erreur de manip, l'éditeur de prompt est vraiment basique, g pas fini de taper et je fais [ENTER] au lieu de [MAJ+ENTER] ! Voici le code.
+Bon, Voila, j'ai reconstitué ce que fait Flecs pour créer un component ECS, avec le fragment de langage C suivant, qui se voit incorporé dans une fonction C comme main(), à l'intérieur des '{' et '}' du corps de fonction. Ça donne comme suit. 
+---C 
+typedef struct { double x, y ; } TYPENAME ; 
+main() {
+ /* Autre code C, init World ECS, ... */ 
+/* Ce define est écrit par le développeur Flecs */
+/* #define ECS_COMPONENT( W, TYPENAME) */
+/* Ce qui suit est généré par le Macro-(pré)-compilateur */ 
+{
+ecs_entity_t FLECS_ID_TYPENAME_ID_ = 0 ; 
+ecs_component_desc_t desc = {0} ; 
+ecs_entity_desc_t edesc = {0} ; 
+edesc.id = FLECS_ID_TYPENAME_ID_ ; 
+edesc.use_low_id = true ; 
+edesc.name = #TYPENAME ; 
+edesc.symbol = #TYPENAME ; 
+desc.entity = ecs_entity_init( W, &edesc) ; 
+desc.type.size = ECS_SIZEOF( TYPENAME) ; 
+desc.type.alignment = ECS_ALIGNOF( TYPENAME) ; 
+FLECS_ID_TYPENAME_ID_ = ecs_component_init( W, &desc) ;
+}
+assert( FLECS_ID_TYPENAME_ID_ != 0, ECS_INVALID_PARAMETER
+             , "Failed to create component %s", #TYPENAME ) ;
+(void)FLECS_ID_TYPENAME_ID_ ;
+/* AUTRE CODE POUR GÉRER LE COMPONENT */
+/* Code Fin du Monde W */
+} /* Fin du main() */
+---
+Je penses que tu aura compris ? Il faut comprendre que c'est compilé et ensuite exécuté, ce qui est différent du Python interprété.
+quand "#TYPENAME", c'est la str du nom du type défini.
+quand "&desc", c'est l'adresse de la variable desc en mémoire.
+"ecs_entity_init()" est de l'API C Flecs, et il faut l'écrire à la sauce CTYPES/CDLL pour appeler cette fonction dans la librairie flecs.dll.
+Pareil pour "ecs_component_init()".
+FLECS_ID_TYPENAME_ID_ est une variable dont le nom est générée dynamiquement avec des #define, à partir du nom TYPENAME du typedef initial. 
+En Python, ce typedef se traduit par la data classe utilisateur dont on veut enregistrer le component dans le monde Flecs.
+Maintenant, génère l'équivalent Python, stp.
+
+=======
+
+Si tu veux, la fonction réutilisable, mais il y a des retouches du code Python, en particulier...
+- pour "name" et "symbole", retrouver la str du nom de la classe ;
+- pour sizeof() et alignement(), utiliser ctypes.sizeof() et ctypes.alignement() (si c'est bien ces noms là).
+-  pour .use_low_id, j'ai trouvé "ctypes.c_bool", mais je n'ai pas trouvé les valeurs "true" et "false" associées à ce type booléen c_bool pour dire à la fonction appeléd dans la DLL qu'il s'agit de la valeur "true" du langage C, et pas la valeur True de Python.
+- les classes des types flecs ecs_entity_desc_t et ecs_component_desc_t devraient je pense être complétées des champs inutilisés ici mais présents dans la doc de l'API C, surtout ne les invente pas.
+Il faut aussi faire le tri entre le code d'utilisation de la fonction réutilisable et le corps de cette fonction réutilisable, pas si trivial que ça en a l'air...
+Fais deux modules Python, un pour la fonction réutilisable, l'autre par exemple pour pytest pour le code d'utilisation de la fonction réutilisable.
+préfixe les paramètres d'appel des fonctions par "p_".
+Préfixe les variables locales par "_".
+Dans les appels de fonctions aux lignes très longues fractionnées sur plusieurs lignes, commencer les lignes de suite avec la virgule qui suit le paramètre précédent.
+Exemple : 
+def ma_fonction_sur_plusieurs_lignes(
+    self
+    , param1
+    , param2
+    ) -> None:
+    #le code
+Déjà, si tu t'en sors la dessus, chapeau :-D
