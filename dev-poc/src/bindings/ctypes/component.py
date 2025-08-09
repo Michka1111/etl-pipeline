@@ -1,6 +1,6 @@
 from ctypes import (
     CDLL, Structure
-    , c_int32, c_uint32, c_uint64, c_size_t, c_char_p, c_void_p, c_bool
+    , c_int32, c_uint64, c_size_t, c_char_p, c_void_p, c_bool
     , POINTER, byref, sizeof, alignment
 )
 

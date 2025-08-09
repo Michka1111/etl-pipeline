@@ -1,5 +1,8 @@
-from ctypes import CDLL, Structure, byref, c_bool, c_char, c_int32, c_uint32, c_void_p, c_uint64, c_size_t, c_char_p, POINTER, create_string_buffer, memmove, sizeof
-from pathlib import Path
+from ctypes import (
+    CDLL, Structure
+    , c_bool, c_char, c_int32, c_void_p, c_uint64, c_size_t, c_char_p
+    , byref, POINTER, create_string_buffer, memmove, sizeof
+)
 import time
 from singleton_registry_path import PathRegistry
 
@@ -8,7 +11,7 @@ ecs_world_t         = c_void_p
 ecs_id_t            = c_uint64
 ecs_size_t          = c_size_t
 bool_t              = c_bool
-true_t              = True
+true_t              = c_bool(True)
 int32_t             = c_int32
 const_char_p        = c_char_p
 # Types dérivés
@@ -16,14 +19,7 @@ ecs_entity_t        = ecs_id_t  # typedef uint64_t ecs_entity_t;
 # Types généricisés
 ecs_type_hooks_t    = c_void_p  # typedef struct ecs_type_hooks_t ecs_type_hooks_t
 const_ecs_id_t_p    = c_void_p  # const ecs_id_t *
-const_ecs_value_t_p = c_void_p  # const ecs_value_t *
-
-# from ctypes import Structure, c_uint32, c_uint64, c_size_t, c_void_p, c_char_p
-# Classes d'interfaces des liaisons Ctypes pour Flecs
-# soigneusement initialisées à 0 pour la bonne santé de Flecs
-
-# import ici pour accès à ses fonctions internes comme ctypes.sizeof()
-import ctypes
+const_ecs_value_t_p = c_void_p  # const ecs_value_t 
 
 #
 # Chargement de la DLL
@@ -109,31 +105,3 @@ def set_html_component(world, entity, component_id, html_str: str):
     ecs_add_component(world, entity, component_id)
     ecs_set_component_data(world, entity, component_id, html)
 
-#
-# Utilisation (principale)
-#
-if __name__ == "__main__":
-    # Monde
-    world = ecs_init()
-    # Entité
-    entity = ecs_new(world)
-
-    # Composant HTML
-    # 1 REGISTER
-    html_component_id = register_html_component(world)
-    # 2 SET
-    # Entité métier à composant HTML avec contenu HTML
-    set_html_component(world, entity, html_component_id, "<html>Test</html>")
-
-    # Attente
-    time.sleep(5)
-
-    # 3. RETRIEVE
-    # Récupération du composant
-    retrieved = get_component_data(world, entity, html_component_id, CHTMLComponent)
-    if retrieved:
-        html_str = bytes(retrieved.html).decode("utf-8").rstrip("\x00")
-        print("Contenu HTML extrait du composant de l'entité :", html_str)
-
-    # Terminer le monde
-    ecs_fini(world)

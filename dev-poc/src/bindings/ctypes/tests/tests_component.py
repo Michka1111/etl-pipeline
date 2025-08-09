@@ -4,7 +4,7 @@ from ctypes import (
     , c_void_p
 )
 
-from flecs_component_register import register_component_struct
+from component import register_component_struct
 
 class Position(Structure):
     _fields_ = [
