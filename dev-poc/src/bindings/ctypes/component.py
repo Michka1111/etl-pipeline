@@ -1,5 +1,5 @@
 from ctypes import (
-    CDLL, Structure
+    Structure
     , c_int32, c_uint64, c_size_t, c_char_p, c_void_p, c_bool
     , POINTER, byref, sizeof, alignment
 )
@@ -100,60 +100,69 @@ class EcsComponentDesc(Structure):      # ECS_COMPONENT_DESC_T
     _fields_ = [                        # https://www.flecs.dev/flecs/structecs__component__desc__t.html
         (  "_canary",   int32_t)        # ZERO-SET for validation ==> assert error
         , ("entity",    ecs_entity_t)   # looked-up for existing, zero-set for creation
-        , ("type",      EcsTypeInfo)    # ecs_type_info_t)   # See Above
+        , ("type.size",      ecs_size_t)
+        , ("type.alignment", ecs_size_t)
+#        , ("type",      EcsTypeInfo)    # ecs_type_info_t)   # See Above
     ]
 
 def register_dataclass_component(
-    p_world_ptr
-    , p_data_cls
-    , p_flecs_lib: CDLL
+    p_data_cls: Structure
     ) -> c_uint64:
-
+    _s = FlecsBinding()
+    _flecs_lib  = _s.flecs_lib
+    _world      = _s.flecs_world
     _name = p_data_cls.__name__
     _size = sizeof(p_data_cls)
     _align = alignment(p_data_cls)
-
+    #
+    # Création de l'entité qui sera le Component.
+    #
+    # structure de données C-API
     _edesc = EcsEntityDesc()
-    _edesc._canary = 0
-    _edesc.id = 0
-    _edesc.name = _name.encode("utf-8")
-    _edesc.symbol = _name.encode("utf-8")
-    _edesc.use_low_id = c_bool(True)
-
-    p_flecs_lib.ecs_entity_init.argtypes = [c_void_p, POINTER(EcsEntityDesc)]
-    p_flecs_lib.ecs_entity_init.restype = c_uint64
-
-    _entity_id = p_flecs_lib.ecs_entity_init(
-        p_world_ptr
+    _edesc._canary      = 0
+    _edesc.id           = 0
+    _edesc.name         = _name.encode("utf-8")
+    _edesc.symbol       = _name.encode("utf-8")
+    _edesc.use_low_id   = c_bool(True)
+    # Paramètres de la fonction C-API
+    _flecs_lib.ecs_entity_init.argtypes = [c_void_p, POINTER(EcsEntityDesc)]
+    _flecs_lib.ecs_entity_init.restype = c_uint64
+    # Fonction C-API
+    _entity_id = _flecs_lib.ecs_entity_init( # type: ignore
+        _world
         , byref(_edesc)
     )
-
+    #
+    # Création du Component pour p_data_cls
+    #
+    # Structure de données C-API
     _desc = EcsComponentDesc()
-    _desc._canary = 0
-    _desc.entity = _entity_id
-    _desc.type = EcsTypeInfo(_size, _align)
-    _desc.name = _name.encode("utf-8")
-    _desc.symbol = _name.encode("utf-8")
-    _desc.use_low_id = c_bool(True)
-
-    p_flecs_lib.ecs_component_init.argtypes = [c_void_p, POINTER(EcsComponentDesc)]
-    p_flecs_lib.ecs_component_init.restype = c_uint64
-
-    _component_id = p_flecs_lib.ecs_component_init(
-        p_world_ptr
+    _desc._canary       = 0
+    _desc.entity        = _entity_id
+    _desc.size          = _size
+    _desc.align         = _align
+    _desc.name          = _name.encode("utf-8") # type: ignore
+    _desc.symbol        = _name.encode("utf-8") # type: ignore
+    _desc.use_low_id    = c_bool(True)
+    # Paramètres de la fonction C-API
+    _flecs_lib.ecs_component_init.argtypes = [c_void_p, POINTER(EcsComponentDesc)] # type: ignore
+    _flecs_lib.ecs_component_init.restype = c_uint64 # type: ignore
+    # Fonction C-API
+    _component_id = _flecs_lib.ecs_component_init( # type: ignore
+        _world
         , byref(_desc)
     )
-
+    # Vérification du résultat
     assert _component_id != 0, f"Failed to register component {_name}"
-
+    # retour
     return _component_id
 
-
 # Ajout d’un composant à une entité
-def ecs_add_component(world, entity, component_id):
-    lib = binded_load_flecs()
-    lib.ecs_add_id.argtypes = [ecs_world_t, ecs_entity_t, ecs_entity_t]
-    lib.ecs_add_id(world, entity, component_id)
+def ecs_add_component(entity, component_id):
+    _s = FlecsBinding()
+    _lib = _s.binded_load_flecs()
+    _lib.ecs_add_id.argtypes = [ecs_world_t, ecs_entity_t, ecs_entity_t]
+    _lib.ecs_add_id(_s.flecs_world, entity, component_id)
 
 # Écriture des données d’un composant
 def ecs_set_component_data(world, entity, component_id, data: Structure):
