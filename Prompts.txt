@@ -1,3 +1,4 @@
+Bon, Voila, j'ai reconstitué ce que fait Flecs pour créer un component ECS, avec le fragment de langage C suivant, qui se voit incorporé dans une fonction C comme main(), à l'intérieur des '{' et '}' du corps de fonction. Ça donne comme suit.
 Nan, erreur de manip, l'éditeur de prompt est vraiment basique, g pas fini de taper et je fais [ENTER] au lieu de [MAJ+ENTER] ! Voici le code.
 Bon, Voila, j'ai reconstitué ce que fait Flecs pour créer un component ECS, avec le fragment de langage C suivant, qui se voit incorporé dans une fonction C comme main(), à l'intérieur des '{' et '}' du corps de fonction. Ça donne comme suit. 
 ---C 
