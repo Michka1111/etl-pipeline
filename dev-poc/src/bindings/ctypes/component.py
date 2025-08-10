@@ -164,6 +164,7 @@ def ecs_add_component(entity, component_id):
     _lib.ecs_add_id.argtypes = [ecs_world_t, ecs_entity_t, ecs_entity_t]
     _lib.ecs_add_id(_s.flecs_world, entity, component_id)
 
+"""
 # Écriture des données d’un composant
 def ecs_set_component_data(world, entity, component_id, data: Structure):
     lib = binded_load_flecs()
@@ -184,3 +185,4 @@ def get_component_data(world, entity: c_uint64, component_id: c_uint64, struct_c
     data = struct_cls()
     memmove(byref(data), ptr, sizeof(data))
     return data
+"""
