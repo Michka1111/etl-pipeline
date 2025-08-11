@@ -106,7 +106,7 @@ class EcsComponentDesc(Structure):      # ECS_COMPONENT_DESC_T
     ]
 
 def register_dataclass_component(
-    p_data_cls: Structure
+        p_data_cls: Structure
     ) -> c_uint64:
     _s = FlecsBinding()
     _flecs_lib  = _s.flecs_lib

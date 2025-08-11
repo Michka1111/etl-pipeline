@@ -63,12 +63,12 @@ def test_ecs_new_entity():
     """
     Vérifie la création d'une nouvelle entité.
     """
-    instance = FlecsBinding()
-    instance.binded_ecs_init()
-    entity = instance.binded_ecs_new()
-    instance.binded_ecs_fini()
-    assert isinstance(entity, int)  # ecs_entity_t) ==> False /!\
-    assert entity == 534            # vu de Python, c'est bien int
+    _bdr_ecs = FlecsBinding()
+    _bdr_ecs.binded_ecs_init()
+    _entity = _bdr_ecs.binded_ecs_new()
+    _bdr_ecs.binded_ecs_fini()
+    assert isinstance(_entity, int)  # ecs_entity_t) ==> False /!\
+    assert _entity == 534            # vu de Python, c'est bien int
     pass
 
 def test_ecs_set_name():
@@ -79,7 +79,9 @@ def test_ecs_set_name():
     # Create an entity with name Bob
     _bob = _bdr_ecs.binded_ecs_set_name(0, "Bob")
     _bob2 = _bdr_ecs.binded_ecs_set_name(0, "Bob")
+    
     _bdr_ecs.binded_ecs_fini()
+    # Create with existing Entity with NAME ==> find ==> get(existing_E)
     assert isinstance(_bob, int) and _bob == 534 and _bob == _bob2
 
     pass
