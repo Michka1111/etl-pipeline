@@ -8,5 +8,9 @@
     "python.globalModuleInstallation": true,
     "python.terminal.activateEnvironment": false,
     "files.eol": "\n",
-    "python.analysis.typeCheckingMode": "standard"
+    "python.analysis.typeCheckingMode": "standard",
+    "github.copilot.chat.agent.autoFix": false,
+    "github.copilot.chat.agent.runTasks": false,
+    "github.copilot.nextEditSuggestions.fixes": false,
+    "github.copilot.renameSuggestions.triggerAutomatically": false
 }
