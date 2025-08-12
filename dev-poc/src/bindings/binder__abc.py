@@ -1,6 +1,9 @@
+from typing import Any
+
+
 class BaseBinder:
-    def bind_function(self, func_name: str, business_value=None):
+    def bind_function(self, func_name: str, business_value: Any = None):
         raise NotImplementedError
 
-    def log_transaction(self, result, operation: str, business_value=None):
+    def meta_log(self, result, operation: str, business_value=None):
         raise NotImplementedError
