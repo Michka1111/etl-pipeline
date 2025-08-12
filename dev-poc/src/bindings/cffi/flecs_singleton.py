@@ -1,3 +1,4 @@
+from types import MethodType
 from cffi import FFI
 
 from singleton_registry_path import PathRegistry
@@ -22,6 +23,13 @@ class FlecsBindings:
             self.flecs_lib = None
             self.flecs_world = None
             self.__class__._initialized = True
+
+    @classmethod
+    def add_binding(cls, name: str, params: tuple, return_type: str):
+        def method(self, *args):
+            func = getattr(cls._instance.flecs_lib, name) # type: ignore
+            return func(*args)
+        setattr(cls._instance, name, MethodType(method, cls._instance))
 
     def is_binded_type(self, p_obj, p_type_name: str) -> bool:
         try:
