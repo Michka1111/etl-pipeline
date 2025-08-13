@@ -27,6 +27,6 @@ class BaseBinder:
         """Accès direct à la bibliothèque chargée"""
         pass
 
-    def bind_function(self, func_name: str, business_value: Any = None):
+    def add_binding_method_to_binder(self, lib_func_name: str, business_value: Any = None):
         raise NotImplementedError
 

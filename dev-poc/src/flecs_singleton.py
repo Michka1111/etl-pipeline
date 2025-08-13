@@ -22,7 +22,9 @@ class FlecsWorld: # (CffiBinder):
             if not self._dll_path.exists():
                 raise FileNotFoundError(f"Flecs DLL not found at {self._dll_path}")
             self._binder = self._binder_cls(self._meta_logger)
+            # SELF.FLECS_LIB = self._binder._lib
             self.bind_cmd, self.flecs_lib = self._binder.bind_tool_tuple(self._dll_path)
+            #
             self._meta_logger.set_binder_instance(self._binder) # MetaLogger est "None-proof" pour Binder.
             self._meta_logger.meta_log(
                 self.flecs_lib

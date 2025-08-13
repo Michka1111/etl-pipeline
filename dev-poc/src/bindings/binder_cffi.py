@@ -12,8 +12,9 @@ class CffiBinder(BaseBinder):
             typedef struct ecs_world_t ecs_world_t;
             typedef uint64_t ecs_id_t;
             typedef ecs_id_t ecs_entity_t;
-            ecs_world_t* ecs_init(void);
-            ecs_entity_t ecs_new(ecs_world_t *world);
+            ecs_world_t * ecs_init(void);
+            ecs_entity_t ecs_new(ecs_world_t * world);
+            ecs_entity_t ecs_set_name (ecs_world_t * world, ecs_entity_t entity, const char * name);
             void ecs_fini(ecs_world_t *world);
         """)
         self._meta_logger = p_meta_logger
@@ -25,15 +26,22 @@ class CffiBinder(BaseBinder):
         self._lib = self._ffi.dlopen(str(self._abs_dll_path)) # "path/to/flecs.so")
         return self._ffi, self._lib
 
-    def bind_function(self, func_name: str, business_value="default business value"):
-        _func = getattr(self._lib, func_name)
+    def add_binding_method_to_binder(
+            self
+            , lib_func_name: str
+            , business_value="default business value"
+            , p_cdata_type=None
+        ):
+        _dll_function = getattr(self._lib, lib_func_name)
 
         def generated_binding_method(*args, **kwargs):
-            result = _func(*args, **kwargs)
-            self._meta_logger.meta_log(result, func_name, business_value)
+            result = _dll_function(*args, **kwargs)
+            if p_cdata_type is not None:
+                result = self._ffi.cast(p_cdata_type, result)
+            self._meta_logger.meta_log(result, lib_func_name, business_value)
             return result
 
-        method_name = f"binded_{func_name}"
+        method_name = f"binded_{lib_func_name}"
         setattr(self, method_name, generated_binding_method)
         pass
 
