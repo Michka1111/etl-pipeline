@@ -4,7 +4,7 @@ Tests unitaires pour le module FlecsBinding (singleton ctypes).
 
 from pathlib import Path
 import pytest
-from bindings.cffi.flecs_singleton import *
+from flecs_singleton__proto import *
 
 # FlecsBinding, ecs_world_t, ecs_entity_t
 
