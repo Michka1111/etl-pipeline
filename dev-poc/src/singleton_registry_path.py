@@ -38,7 +38,7 @@ class _PathRegistry:
             , "world_data_in_path": Path("./data_in")
             , "world_data_out_path": Path("./data_out")
         }
-        self.init(self._default_paths.items())
+        self.init(self._default_paths.items()) # type: ignore
 
     def init(self, entries: list[tuple[str, Union[str, Path]]]):
         """

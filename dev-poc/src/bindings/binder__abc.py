@@ -6,13 +6,14 @@ from typing import Any
 class BaseBinder:
 
     @abstractmethod
-    def bind_tool_tuple(self, p_dll_path: Path) -> tuple[Any, Any]:
+    def bind_tool_tuple(self) -> tuple[Any, Any]:
         """Retourne le tuple (BIND_cmd, BIND_lib) selon la bind-techno.
         CFFI:   (FFI(), lib)
         CTYPES: (None, CDLL())"""
         BIND_cmd = None
         BIND_lib = None
-        return (BIND_cmd, BIND_lib)
+        # return (BIND_cmd, BIND_lib)
+        raise NotImplementedError
 
     @abstractmethod
     def get_metalog_type_c_value(self, p_result: Any):
@@ -25,7 +26,7 @@ class BaseBinder:
     @abstractmethod
     def lib(self):
         """Accès direct à la bibliothèque chargée"""
-        pass
+        raise NotImplementedError
 
     def add_binding_method_to_binder(self, lib_func_name: str, business_value: Any = None):
         raise NotImplementedError
